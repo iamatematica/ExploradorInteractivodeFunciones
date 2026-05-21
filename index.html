@@ -1436,7 +1436,7 @@ class GraphPlotter {
     }
     if (label) {
       ctx.fillStyle = '#1e293b'; ctx.font = 'bold 11px Outfit,sans-serif';
-      ctx.textAlign = 'left'; ctx.fillText(label, px + 8, py - 5);
+      ctx.textAlign = 'left'; ctx.fillText(label, px + 10, py - 10);
     }
   }
   
@@ -2084,9 +2084,64 @@ function initFinal() {
   GF.clear(); GF.drawGrid(); GF.drawAxes();
   GF.asymptote('v', -2, 'x = −2');
   GF.plot(fn, '#1d6fcc', 2.8);
-  // Puntos notables
-  GF.point(0, fn(0), true, '#0ea5e9', 7, `(0; ${fn(0).toFixed(2)})`); // f(0) = log2(2) - 1 = 0
-  GF.point(0, 0, true, '#ef4444', 7, '(0; 0) ← cero y eje y');
+
+  const ctx = GF.ctx;
+
+  // ── Punto notable (0; 0) ──
+  const px = GF.cx(0), py = GF.cy(0);
+  ctx.beginPath(); ctx.arc(px, py, 7, 0, Math.PI * 2);
+  ctx.fillStyle = '#ef4444'; ctx.fill();
+  ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 2.5; ctx.stroke();
+
+  // ── Caja de anotación — cerca del punto, cuadrante superior derecho ──
+  const bx = GF.cx(0.6), by = GF.cy(4.2);
+  const bw = 175, bh = 72;
+
+  // Sombra
+  ctx.shadowColor = 'rgba(0,0,0,.12)'; ctx.shadowBlur = 8; ctx.shadowOffsetY = 3;
+  // Fondo blanco
+  ctx.fillStyle = '#ffffff';
+  ctx.beginPath();
+  ctx.roundRect(bx, by, bw, bh, 8);
+  ctx.fill();
+  ctx.shadowColor = 'transparent'; ctx.shadowBlur = 0; ctx.shadowOffsetY = 0;
+  // Borde
+  ctx.strokeStyle = '#e2e8f0'; ctx.lineWidth = 1.5; ctx.setLineDash([]);
+  ctx.stroke();
+
+  // Línea de referencia (leader line) desde la caja al punto
+  ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 1; ctx.setLineDash([5, 4]);
+  ctx.beginPath();
+  ctx.moveTo(bx, by + bh / 2);
+  ctx.lineTo(px + 10, py - 8);
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // ── Fila 1: Raíz ──
+  const row1y = by + 22;
+  // Bullet rojo
+  ctx.beginPath(); ctx.arc(bx + 14, row1y - 4, 5, 0, Math.PI * 2);
+  ctx.fillStyle = '#ef4444'; ctx.fill();
+  // Texto
+  ctx.fillStyle = '#0f2244'; ctx.font = 'bold 12px Outfit,sans-serif'; ctx.textAlign = 'left';
+  ctx.fillText('x = 0', bx + 24, row1y);
+  ctx.fillStyle = '#64748b'; ctx.font = '10.5px Outfit,sans-serif';
+  ctx.fillText('Raíz  →  f(0) = 0', bx + 24, row1y + 14);
+
+  // Separador
+  ctx.strokeStyle = '#f1f5f9'; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(bx + 8, by + bh / 2); ctx.lineTo(bx + bw - 8, by + bh / 2); ctx.stroke();
+
+  // ── Fila 2: Intersección eje y ──
+  const row2y = by + bh / 2 + 18;
+  // Bullet azul
+  ctx.beginPath(); ctx.arc(bx + 14, row2y - 4, 5, 0, Math.PI * 2);
+  ctx.fillStyle = '#0ea5e9'; ctx.fill();
+  // Texto
+  ctx.fillStyle = '#0f2244'; ctx.font = 'bold 12px Outfit,sans-serif';
+  ctx.fillText('(0 ; 0)', bx + 24, row2y);
+  ctx.fillStyle = '#64748b'; ctx.font = '10.5px Outfit,sans-serif';
+  ctx.fillText('Intersección con eje y', bx + 24, row2y + 14);
 }
 
 /* ========================================================
