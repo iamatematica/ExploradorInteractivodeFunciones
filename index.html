@@ -100,18 +100,30 @@ sub{font-size:.7em;vertical-align:sub}
    PROGRESS BAR (top navigation)
    ======================================== */
 .progress-bar{
-  background:var(--navy);padding:12px 0;position:sticky;top:0;z-index:100;
+  background:var(--navy);padding:10px 0;position:sticky;top:0;z-index:100;
   box-shadow:0 2px 8px rgba(0,0,0,.2)
 }
-.progress-inner{max-width:980px;margin:auto;padding:0 20px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
-.progress-label{color:#94a3b8;font-size:12px;font-weight:600;letter-spacing:.05em;margin-right:4px}
-.progress-stages{display:flex;align-items:center;gap:4px;flex:1;flex-wrap:wrap}
+.progress-inner{
+  max-width:1100px;margin:auto;padding:0 24px;
+  display:grid;grid-template-columns:auto auto 1fr;align-items:center;gap:20px
+}
+.progress-brand{
+  display:flex;flex-direction:column;gap:3px;flex-shrink:0;border-right:1px solid rgba(255,255,255,.15);padding-right:20px
+}
+.progress-brand-title{
+  color:#7dd3fc;font-size:13px;font-weight:800;letter-spacing:.18em;text-transform:uppercase
+}
+.progress-brand-profs{
+  color:#bfdbfe;font-size:11px;font-weight:500;white-space:nowrap;letter-spacing:.01em
+}
+.progress-stages{display:flex;align-items:center;justify-content:center;gap:6px;flex-wrap:nowrap}
 .pstage{
-  display:flex;align-items:center;gap:6px;padding:6px 14px;
+  display:flex;align-items:center;gap:5px;padding:6px 14px;
   border-radius:50px;border:1px solid rgba(255,255,255,.15);
   color:#94a3b8;font-size:12px;font-weight:500;cursor:pointer;
-  transition:all .2s;background:rgba(255,255,255,.05)
+  transition:all .2s;background:rgba(255,255,255,.05);white-space:nowrap
 }
+.pstage:hover{background:rgba(255,255,255,.12);color:#e0f2fe}
 .pstage.active{background:rgba(29,111,204,.6);border-color:var(--blue2);color:#bfdbfe}
 .pstage.done{background:rgba(5,150,105,.25);border-color:#10b981;color:#6ee7b7}
 .pstage-num{
@@ -121,7 +133,12 @@ sub{font-size:.7em;vertical-align:sub}
 }
 .pstage.done .pstage-num{background:#10b981;color:#fff}
 .pstage.active .pstage-num{background:var(--blue2);color:#fff}
-.progress-pct{color:#7dd3fc;font-size:12px;font-weight:700;margin-left:auto}
+@media(max-width:700px){
+  .progress-inner{grid-template-columns:1fr;gap:8px;text-align:center}
+  .progress-brand{border-right:none;padding-right:0;border-bottom:1px solid rgba(255,255,255,.1);padding-bottom:8px;align-items:center}
+  .progress-stages{flex-wrap:wrap;justify-content:center}
+  .pstage span:not(.pstage-num){display:none}
+}
 
 /* ========================================
    STAGE LAYOUT
@@ -517,9 +534,16 @@ input[type=range]{width:100%;accent-color:var(--blue);height:4px;cursor:pointer}
      ======================================== -->
 <div class="progress-bar" id="progress-bar" style="display:none">
   <div class="progress-inner">
-    <span class="progress-label" style="color:#7dd3fc;letter-spacing:.08em;font-size:11px;white-space:nowrap">I&thinsp;N&thinsp;S&thinsp;P&thinsp;T &nbsp;·&nbsp; Prof. Ariel Cardozo &nbsp;·&nbsp; Prof. Pablo Mosquera</span>
-    <span style="color:rgba(255,255,255,.2);margin:0 8px">|</span>
-    <span class="progress-label">PROGRESO</span>
+    <div class="progress-brand">
+      <span class="progress-brand-title">I · N · S · P · T</span>
+      <span class="progress-brand-profs">Prof. Ariel Cardozo &nbsp;·&nbsp; Prof. Pablo Mosquera</span>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:center;flex-shrink:0">
+      <button onclick="showPage('pg-landing')" style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.25);color:#e0f2fe;padding:7px 16px;border-radius:50px;font-family:'Outfit',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:6px"
+        onmouseover="this.style.background='rgba(255,255,255,.22)'" onmouseout="this.style.background='rgba(255,255,255,.1)'">
+        🏠 Inicio
+      </button>
+    </div>
     <div class="progress-stages" id="progress-stages">
       <div class="pstage active" id="ps1" onclick="showPage('pg-s1')">
         <span class="pstage-num">1</span><span>Polinómica</span>
@@ -537,7 +561,6 @@ input[type=range]{width:100%;accent-color:var(--blue);height:4px;cursor:pointer}
         <span class="pstage-num">🏁</span><span>Cierre</span>
       </div>
     </div>
-    <span class="progress-pct" id="progress-pct">0%</span>
   </div>
 </div>
 
@@ -2211,7 +2234,6 @@ function updateProgressBar() {
   const stages = ['s1','s2','s3','s4'];
   let done = stages.filter(s => STATE.stagesCompleted[s]).length;
   const pct = Math.round(done / 4 * 100);
-  document.getElementById('progress-pct').textContent = pct + '%';
   
   stages.forEach((s, i) => {
     const el = document.getElementById('ps' + (i+1));
